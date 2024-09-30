@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body class="body">
+    <div class="container mx-auto mt-lg-5 mt-3 shadow-sm px-lg-5 px-2 py-3">
+        <h3 class="my-lg-4 my-2 text-start text-white text-decoration-underline">Phone Number Interface</h3>
+        <div class="alert alert-danger p-2 text-center" id="errorMsg" style="display: none;">Space cannot be blank</div>
+        <input type="text" placeholder="Contact" class="form-control form-sm shadow-none my-3 w-50" id="contactId">
+        <input type="text" placeholder="Phone Number" class="form-control form-sm shadow-none my-3 w-50" id="phone">
+        <button onclick="addContact()" class="btn btn-danger rounded-pill text-center col-lg-4 col-6 my-1 btn-sm">Add Contact</button>
+    </div>
+    
+    <div class="mx-auto container mt-lg-5 mt-5">
+        <table class="px-lg-5 px-2 py-3 table table-bordered table-striped" id="displayContacts">
+            <div class="text-center alert alert-secondary" id="initialMsg">Contact List</div>
+        </table>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Contact</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" placeholder="Enter the number to edit" class="form-control form-sm shadow-none my-3 w-100" id="numberToEdit">
+                    <input type="text" placeholder="Enter New Contact" class="form-control form-sm shadow-none my-3 w-100" id="newContact">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="editContact()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    const allContacts = [];
+    let editIndex;
+    
+    const addContact = () => {
+        const contactId = document.getElementById('contactId').value;
+        const phone = document.getElementById('phone').value;
+    
+        if (contactId === "" || phone === "") {
+            document.getElementById('errorMsg').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('errorMsg').style.display = 'none';
+            }, 3000);
+        } else {
+            document.getElementById('errorMsg').style.display = 'none';
+            allContacts.push({ contact: contactId, number: phone });
+            document.getElementById('contactId').value = '';
+            document.getElementById('phone').value = '';
+            displayContacts();
+        }
+    };
+    
+    const getIndex = (index) => {
+        editIndex = index;
+        const contact = allContacts[index];
+        document.getElementById('numberToEdit').value = contact.number;
+        document.getElementById('newContact').value = contact.contact;
+    };
+    
+    const editContact = () => {
+        const numberToEdit = document.getElementById('numberToEdit').value;
+        const newContactValue = document.getElementById('newContact').value;
+    
+        if (numberToEdit === "" || newContactValue === "") {
+            alert("Fill in the empty spaces");
+        } else {
+            allContacts[editIndex] = { contact: newContactValue, number: numberToEdit };
+            displayContacts();
+        }
+    };
+    
+    const deleteOne = (index) => {
+        if (confirm('Are you sure you want to delete?')) {
+            allContacts.splice(index, 1);
+            displayContacts();
+        }
+    };
+    
+    const displayContacts = () => {
+        const display = document.getElementById('displayContacts');
+        display.innerHTML = `<thead>
+            <tr>
+                <td class="fw-bold text-center">S/N</td>
+                <td class="fw-bold text-center">Contacts</td>
+                <td class="fw-bold text-center">Phone Number</td>
+                <td class="fw-bold text-center">Actions</td>
+            </tr>
+        </thead><tbody>`;
+        
+        allContacts.forEach((contact, i) => {
+            display.innerHTML += `
+            <tr>
+                <td class="fw-bold text-center">${i + 1}</td>
+                <td class="fw-bold text-center">${contact.contact}</td>
+                <td class="fw-bold text-center">${contact.number}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="getIndex(${i})">Edit</button>
+                    <button class="btn btn-sm btn-warning" onclick="deleteOne(${i})">Delete</button>
+                </td>
+            </tr>`;
+        });
+    
+        display.innerHTML += `</tbody>`;
+    };
+    </script>
+    
+</body>
+</html>
